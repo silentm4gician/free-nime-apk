@@ -7,66 +7,139 @@ import {
   ScrollView,
   Pressable,
   FlatList,
+  StatusBar,
 } from 'react-native';
 import { useEffect, useState } from 'react';
 import { Screen } from 'components/Screen';
-import { getAnimeDetails, getEpisodes } from 'utils/requests';
+import { getAnimeInfo } from 'utils/requests';
+import { extractContentName } from 'utils/helpers';
 
 const Details = () => {
   const { animeID } = useLocalSearchParams();
-  const [animeData, setAnimeData] = useState([]);
-  const [episodes, setEpisodes] = useState([]);
+  const [animeData, setAnimeData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getAnimeDetails(animeID).then((data) => {
-      setAnimeData(data.data);
-    });
+    if (animeID) {
+      getAnimeInfo(`https://monoschino2.com/${animeID}`).then((data) => {
+        setAnimeData(data);
+        setLoading(false);
+      });
+    }
+  }, [animeID]);
 
-    getEpisodes(animeID).then((data) => {
-      setEpisodes(data.data.episodes);
-    });
-  }, []);
+  if (loading) {
+    return (
+      <Screen>
+        <StatusBar barStyle="light-content" backgroundColor="#000000" />
+        <View className="flex-1 items-center justify-center bg-black">
+          <ActivityIndicator size="large" color="#CF9FFF" />
+        </View>
+      </Screen>
+    );
+  }
+
+  if (!animeData) {
+    return (
+      <Screen>
+        <StatusBar barStyle="light-content" backgroundColor="#000000" />
+        <View className="flex-1 items-center justify-center bg-black">
+          <Text className="text-lg font-medium text-white">
+            No se encontró información del anime.
+          </Text>
+        </View>
+      </Screen>
+    );
+  }
+
+  const { title, image, description, genres, extraInfo, episodes } = animeData;
 
   return (
     <Screen>
+      <StatusBar barStyle="light-content" backgroundColor="#000000" />
       <Stack.Screen
         options={{
-          headerStyle: { backgroundColor: 'purple' },
-          headerTintColor: 'white',
-          headerLeft: () => {},
-          headerRight: () => {},
-          headerTitle: 'Anime Details',
+          headerStyle: { backgroundColor: '#000' },
+          headerTintColor: '#CF9FFF',
+          headerTitle: title.length > 20 ? title.slice(0, 20) + '...' : title,
+          headerShadowVisible: false,
         }}
       />
-      <View className="items-center p-4">
-        {animeData.length === 0 ? (
-          <ActivityIndicator color={'purple'} size={'large'} />
-        ) : (
-          <View className="items-center justify-center">
-            <Text className="my-2 text-2xl font-bold text-white">{animeData?.anime.info.name}</Text>
+
+      <ScrollView className="flex-1 bg-black">
+        <View className="px-4 pb-16">
+          {/* Hero Section with Image and Title */}
+          <View className="mb-6 mt-4 items-center">
             <Image
-              source={{ uri: animeData?.anime.info.poster }}
-              className="my-2 size-48 rounded-md"
+              source={{ uri: image }}
+              className="h-80 w-56 rounded-xl shadow-lg"
+              resizeMode="cover"
             />
-            <ScrollView className="h-[300px] w-full">
-              <Text className="p-4 text-white">{animeData?.anime.info.description}</Text>
-            </ScrollView>
-            <View className="h-1/2 w-full p-4">
-              <Text className="my-2 text-lg text-white">Episodes</Text>
+            <Text className="mt-6 text-center text-2xl font-bold text-[#CF9FFF]">{title}</Text>
+          </View>
+
+          {/* Géneros */}
+          <View className="mb-6 flex-row flex-wrap justify-center gap-2">
+            {genres.map((genre, index) => (
+              <View
+                key={index}
+                className="rounded-full border border-[#CF9FFF] bg-[#CF9FFF]/20 px-4 py-1.5">
+                <Text className="text-sm font-medium text-[#CF9FFF]">{genre}</Text>
+              </View>
+            ))}
+          </View>
+
+          {/* Info Extra */}
+          <View className="mb-8 rounded-xl bg-[#121212] p-4 shadow-sm">
+            <Text className="mb-3 text-xl font-bold text-[#CF9FFF]">Información</Text>
+            <View className="space-y-2">
+              <Text className="text-base text-white">
+                🎞 <Text className="font-medium">Formato:</Text> {extraInfo.format}
+              </Text>
+              <Text className="text-base text-white">
+                📺 <Text className="font-medium">Estado:</Text> {extraInfo.status}
+              </Text>
+              <Text className="text-base text-white">
+                🗓 <Text className="font-medium">Año:</Text> {extraInfo.year}
+              </Text>
+              <Text className="text-base text-white">
+                📌 <Text className="font-medium">Total de Episodios:</Text>{' '}
+                {extraInfo.totalEpisodes}
+              </Text>
+            </View>
+          </View>
+
+          {/* Descripción */}
+          <View className="mb-8">
+            <Text className="mb-3 text-xl font-bold text-[#CF9FFF]">Sinopsis</Text>
+            <Text className="text-base leading-6 text-white/90">{description}</Text>
+          </View>
+
+          {/* Episodios */}
+          <View className="mb-12">
+            <Text className="mb-4 text-xl font-bold text-[#CF9FFF]">Episodios</Text>
+            {episodes.length > 0 ? (
               <FlatList
                 data={episodes}
-                keyExtractor={(episode) => episode.episodeId.toString()}
-                numColumns={4} // ✅ Configura la grilla
+                keyExtractor={(ep) => ep.url}
+                numColumns={2}
+                scrollEnabled={false}
+                columnWrapperStyle={{ gap: 8 }}
+                ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
                 renderItem={({ item }) => (
-                  <View className="w-1/4 p-1">
-                    <Link asChild href={`/watch/${item.episodeId}`}>
+                  <View className="flex-1">
+                    <Link asChild href={`/watch/${extractContentName(item.url)}`}>
                       <Pressable>
                         {({ pressed }) => (
                           <View
-                            className={`${
-                              pressed ? 'bg-purple-400' : 'bg-purple-500'
-                            } rounded-md p-2`}>
-                            <Text className="text-center text-white">{item.number}</Text>
+                            className={`rounded-lg p-4 ${
+                              pressed ? 'bg-[#CF9FFF]' : 'border border-[#CF9FFF]/30 bg-[#121212]'
+                            }`}>
+                            <Text
+                              className={`text-center font-semibold ${pressed ? 'text-black' : 'text-[#CF9FFF]'}`}
+                              numberOfLines={1}>
+                              {item.title || `Episodio ${item.number}`}
+                            </Text>
                           </View>
                         )}
                       </Pressable>
@@ -74,10 +147,14 @@ const Details = () => {
                   </View>
                 )}
               />
-            </View>
+            ) : (
+              <View className="items-center rounded-lg bg-[#121212] p-4">
+                <Text className="text-white/80">No hay episodios disponibles aún.</Text>
+              </View>
+            )}
           </View>
-        )}
-      </View>
+        </View>
+      </ScrollView>
     </Screen>
   );
 };

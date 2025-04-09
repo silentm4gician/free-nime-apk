@@ -7,27 +7,27 @@ export default function TabsLayout({ children }) {
       screenOptions={{
         headerShown: false,
         tabBarStyle: { backgroundColor: 'black' },
-        tabBarActiveTintColor: 'purple',
+        tabBarActiveTintColor: '#CF9FFF',
         tabBarInactiveTintColor: 'white',
       }}>
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
+          title: 'Inicio',
           tabBarIcon: ({ color }) => <HomeIcon color={color} />,
         }}
       />
       <Tabs.Screen
         name="about"
         options={{
-          title: 'About',
+          title: 'Calendario',
           tabBarIcon: ({ color }) => <AboutIcon color={color} />,
         }}
       />
       <Tabs.Screen
         name="search"
         options={{
-          title: 'Search',
+          title: 'Buscar',
           tabBarIcon: ({ color }) => <SearchIcon color={color} />,
         }}
       />
