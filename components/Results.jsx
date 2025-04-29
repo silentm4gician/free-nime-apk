@@ -4,23 +4,27 @@ import { getResults } from 'utils/requests';
 import { AnimatedCards } from './LastEpCards';
 
 const Results = ({ query }) => {
-  const [page, setPage] = useState(1);
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getResults(query, page).then((data) => {
-      setResults(data.data.animes);
+    getResults(query).then((data) => {
+      setResults(data);
       setLoading(false);
     });
-  }, [query, page]);
+  }, [query]);
 
   return (
-    <View>
-      {results?.length < 0 ? (
+    <View className="w-full">
+      {loading ? (
         <ActivityIndicator size="large" color="white" />
-      ) : (
-        <View className={`mx-6 mb-32 flex`}>
+      ) : results?.length > 0 ? (
+        <View className={``}>
+          <View className="flex-row items-center py-4">
+            <View className="h-4 w-1 rounded-full bg-[#CF9FFF]" />
+            <Text className="ml-2 text-2xl font-bold text-white">Resultados</Text>
+          </View>
+
           <FlatList
             data={results}
             keyExtractor={(anime) => anime.id.toString()}
@@ -30,8 +34,11 @@ const Results = ({ query }) => {
                 <AnimatedCards anime={item} index={index} />
               </View>
             )}
+            contentContainerStyle={{ paddingBottom: 32 }}
           />
         </View>
+      ) : (
+        <Text>no hay resultados</Text>
       )}
     </View>
   );

@@ -20,7 +20,7 @@ export default function TabsLayout({ children }) {
       <Tabs.Screen
         name="about"
         options={{
-          title: 'Calendario',
+          title: 'Info',
           tabBarIcon: ({ color }) => <AboutIcon color={color} />,
         }}
       />

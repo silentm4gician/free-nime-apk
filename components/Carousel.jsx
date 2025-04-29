@@ -1,7 +1,7 @@
 import { Link } from 'expo-router';
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Text, View, Image, Dimensions, TouchableOpacity, FlatList, Animated } from 'react-native';
-import { extractUrlId } from 'utils/helpers';
+import { PLayIcon } from './Icons';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const ITEM_WIDTH = SCREEN_WIDTH * 0.85;
@@ -76,7 +76,7 @@ export function Carousel({ data }) {
           opacity,
           transform: [{ scale }],
         }}>
-        <Link asChild href={`/${extractUrlId(item.url)}`}>
+        <Link asChild href={`/${item.id}`}>
           <TouchableOpacity
             activeOpacity={0.9}
             className="h-full w-full overflow-hidden rounded-2xl shadow-lg"
@@ -115,7 +115,8 @@ export function Carousel({ data }) {
               {/* Watch Button */}
               <View className="mt-3 flex-row items-center">
                 <View className="mr-2 h-8 w-8 items-center justify-center rounded-full bg-[#CF9FFF]">
-                  <Text className="font-bold text-black">▶</Text>
+                  {/* <Text className="font-bold text-black">▶</Text> */}
+                  <PLayIcon />
                 </View>
                 <Text className="text-sm font-medium text-[#CF9FFF]">Ver ahora</Text>
               </View>

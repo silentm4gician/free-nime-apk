@@ -12,7 +12,7 @@ const layout = () => {
           headerStyle: {
             backgroundColor: 'black',
           },
-          headerTintColor: 'white',
+          headerTintColor: '#CF9FFF',
           headerTitle: 'FreeNime',
           headerLeft: () => <NavBar />,
           headerRight: () => <AboutIcon />,

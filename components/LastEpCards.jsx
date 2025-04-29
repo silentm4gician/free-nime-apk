@@ -1,11 +1,20 @@
 import { Link } from 'expo-router';
 import { useEffect, useRef } from 'react';
 import { View, Text, Image, Animated, Pressable } from 'react-native';
-import { extractContentName } from 'utils/helpers';
+import { PLayIcon } from './Icons';
+
+function reconstruirID(id) {
+  const partes = id.split('/');
+  if (partes.length === 2) {
+    const [idioma, slug] = partes;
+    return `${slug}-${idioma}`;
+  }
+  return id; // si no tiene formato idioma/slug, lo devuelve tal cual
+}
 
 export function LastEpCards({ anime, isEp }) {
   const image = anime.image;
-  const epID = extractContentName(anime.url);
+  const epID = reconstruirID(anime.id);
   const title = anime.title;
   const epNumber = anime.episodeNumber;
 
@@ -38,7 +47,9 @@ export function LastEpCards({ anime, isEp }) {
 
               {/* Episode Badge */}
               <View className="absolute right-2 top-2 rounded-lg bg-black/80 px-2.5 py-1 shadow-md">
-                <Text className="text-sm font-bold text-[#CF9FFF]">{epNumber}</Text>
+                <Text className="text-sm font-bold text-[#CF9FFF]">
+                  {isEp ? epNumber : anime.type}
+                </Text>
               </View>
 
               {/* Content Container */}
@@ -46,12 +57,12 @@ export function LastEpCards({ anime, isEp }) {
                 {/* Title with improved background for legibility */}
                 <View className="flex-row items-center">
                   {/* <View className="rounded-lg bg-black/60 px-2.5 py-1"> */}
-                    <Text
-                      className="text-sm font-bold text-white"
-                      numberOfLines={1}
-                      ellipsizeMode="tail">
-                      {title}
-                    </Text>
+                  <Text
+                    className="text-sm font-bold text-white"
+                    numberOfLines={1}
+                    ellipsizeMode="tail">
+                    {title}
+                  </Text>
                   {/* </View> */}
                 </View>
               </View>
@@ -60,7 +71,7 @@ export function LastEpCards({ anime, isEp }) {
                 <View className="flex-row items-center">
                   <View className="rounded-full bg-black/60 px-2.5 py-0.5">
                     <Text className="text-xs font-medium text-[#CF9FFF]">
-                      {isEp ? 'Episodio' : 'Serie'}
+                      {isEp ? 'Episodio' : anime.year}
                     </Text>
                   </View>
                 </View>
@@ -70,7 +81,8 @@ export function LastEpCards({ anime, isEp }) {
               {isEp && (
                 <View className="absolute left-1/2 top-1/2 -ml-6 -mt-6 h-12 w-12 items-center justify-center rounded-full bg-black/60">
                   <View className="h-10 w-10 items-center justify-center rounded-full bg-[#CF9FFF]">
-                    <Text className="ml-1 text-lg font-bold text-black">▶</Text>
+                    {/* <Text className="ml-1 text-lg font-bold text-black">▶</Text> */}
+                    <PLayIcon />
                   </View>
                 </View>
               )}

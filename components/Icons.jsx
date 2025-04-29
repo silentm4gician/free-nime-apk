@@ -2,6 +2,7 @@ import { Entypo } from '@expo/vector-icons';
 import { Link } from 'expo-router';
 import { Pressable } from 'react-native';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import AntDesign from '@expo/vector-icons/AntDesign';
 
 export const AboutIcon = ({ color }) => {
   return (
@@ -47,4 +48,12 @@ export const SearchIcon = ({ color }) => {
       </Pressable>
     </Link>
   );
+};
+
+export const PLayIcon = ({ color }) => {
+  return <Entypo name="controller-play" size={20} color="black" />;
+};
+
+export const GitHubIcon = ({ color }) => {
+  return <AntDesign name="github" size={24} color="black" />;
 };

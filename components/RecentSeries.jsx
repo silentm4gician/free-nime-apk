@@ -1,11 +1,10 @@
 import { Link } from 'expo-router';
 import { Text, View, Image, ScrollView, TouchableOpacity, Animated } from 'react-native';
-import { extractUrlId } from 'utils/helpers';
 import { useState } from 'react';
 
 // Enhanced card component with fixed height
 const RecentSeriesCard = ({ series }) => {
-  const seriesID = extractUrlId(series.url);
+  const seriesID = series.id;
   const [pressed, setPressed] = useState(false);
 
   // Animation for card press

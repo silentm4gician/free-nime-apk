@@ -12,7 +12,14 @@ import {
 import { useEffect, useState } from 'react';
 import { Screen } from 'components/Screen';
 import { getAnimeInfo } from 'utils/requests';
-import { extractContentName } from 'utils/helpers';
+
+function reconstruirIDParaURL(id) {
+  if (id.endsWith('-latino')) {
+    const baseID = id.replace(/-latino$/, '');
+    return `latino/${baseID}`;
+  }
+  return id;
+}
 
 const Details = () => {
   const { animeID } = useLocalSearchParams();
@@ -21,7 +28,10 @@ const Details = () => {
 
   useEffect(() => {
     if (animeID) {
-      getAnimeInfo(`https://monoschino2.com/${animeID}`).then((data) => {
+      const fixedID = reconstruirIDParaURL(animeID);
+      const url = `https://monoschino2.com/${fixedID}`;
+      console.log(url);
+      getAnimeInfo(url).then((data) => {
         setAnimeData(data);
         setLoading(false);
       });
@@ -128,7 +138,7 @@ const Details = () => {
                 ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
                 renderItem={({ item }) => (
                   <View className="flex-1">
-                    <Link asChild href={`/watch/${extractContentName(item.url)}`}>
+                    <Link asChild href={`/watch/${item.id}`}>
                       <Pressable>
                         {({ pressed }) => (
                           <View

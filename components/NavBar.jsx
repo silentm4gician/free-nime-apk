@@ -17,6 +17,7 @@ const NavBar = () => {
                 borderRadius: 100,
                 marginHorizontal: 6,
               }}
+              className='border-2 border-[#CF9FFF] bg-[#121212] p-1'
             />
           )}
         </Pressable>
